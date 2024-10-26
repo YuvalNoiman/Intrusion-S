@@ -91,7 +91,7 @@ def prediction_diff(y_pred, y_test):
 	#print(len(list(temp3)))
 	print( str(len(list(temp3))) + " out of " + str(len(y_pred)) + " wrong!" )
 
-def main(mode, alert_type):
+def main(mode, alert_type, interval):
 	train = ready_data("/Users/yoavnoiman/Desktop/CPSC 454/Project/KDDTrain+.txt")
 	x_train = train.drop(['attack_type'], axis = 1)
 	y_train = train[['attack_type']].values.ravel()
@@ -152,4 +152,12 @@ if __name__ == "__main__":
 		else:
 			print("\n")
 			break
-	main(mode, alert_type)
+		print("There are three ways to get alerted: \n\n(1) Machine side alerts \n(2) Server side alerts\n(3) Both machine side and server side alerts\n")
+	while True:
+		interval = input("Enter the the time in seconds between each alert (has to be a whole number): ")
+		if not interval.isnumeric():
+			print("Try again")
+		else:
+			print("\n")
+			break
+	main(mode, alert_type, interval)
