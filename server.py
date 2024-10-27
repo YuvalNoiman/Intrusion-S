@@ -3,7 +3,6 @@ import pyodbc
 import os
 
 app = Flask(__name__)
-port = int(os.environ.get("PORT", 3000))
 
 # MS SQL Server configuration
 config = {
@@ -24,25 +23,22 @@ def connect_to_db():
             f"UID={config['username']};"
             f"PWD={config['password']}"
         )
-        print('Connected to MS SQL Server')
         return conn
     except Exception as e:
         print('Error connecting to MS SQL Server:', e)
         return None
 
-# API endpoint to fetch status
-@app.route('/api/status', methods=['GET'])
-def get_status():
+# API endpoint to fetch historical data
+@app.route('/api/history', methods=['GET'])
+def get_history():
     conn = connect_to_db()
     if conn:
         cursor = conn.cursor()
         try:
-            cursor.execute("SELECT TOP 1 * FROM status ORDER BY timestamp DESC")
-            row = cursor.fetchone()
-            if row:
-                return jsonify(dict(zip([column[0] for column in cursor.description], row))), 200
-            else:
-                return jsonify({"error": "No data found"}), 404
+            cursor.execute("SELECT * FROM status ORDER BY timestamp DESC")
+            rows = cursor.fetchall()
+            history = [dict(zip([column[0] for column in cursor.description], row)) for row in rows]
+            return jsonify(history), 200
         except Exception as e:
             print('Error executing query:', e)
             return jsonify({"error": "Internal server error"}), 500
@@ -52,11 +48,5 @@ def get_status():
     else:
         return jsonify({"error": "Database connection failed"}), 500
 
-# Serve static files from the 'public' directory
-@app.route('/<path:path>')
-def static_files(path):
-    return app.send_static_file(path)
-
-# Start the server
 if __name__ == '__main__':
-    app.run(port=port)
+    app.run(port=3000)
