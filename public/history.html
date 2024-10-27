@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historical Data</title>
+    <style>
+         body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav {
+            display: flex;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            transition: background-color 0.3s;
+        }
+        nav a:hover {
+            background-color: #575757;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px; /* Add some space above the table */
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Intrusion-S Monitor</h1>
+        <nav>
+            <a href="index.html">Home</a> <!-- Link to the system status page -->
+            <a href="history.html">History</a> <!-- Current page -->
+            <a href="settings.html">Settings</a>
+        </nav>
+    </header>
+
+    <h1>Historical Data</h1>
+    <table id="historyTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Status</th>
+                <th>Timestamp</th>
+                <!-- Add other relevant fields here -->
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        function fetchHistory() {
+            fetch('/api/history')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector('#historyTable tbody');
+                    tableBody.innerHTML = ''; // Clear existing data
+                    data.forEach(row => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${row.id}</td> <!-- Adjust according to your DB schema -->
+                            <td>${row.status}</td>
+                            <td>${new Date(row.timestamp).toLocaleString()}</td>
+                            <!-- Add other relevant fields here -->
+                        `;
+                        tableBody.appendChild(tr);
+                    });
+                })
+                .catch(error => console.error('Error fetching history:', error));
+        }
+
+        // Fetch history on page load
+        window.onload = fetchHistory;
+    </script>
+</body>
+</html>
