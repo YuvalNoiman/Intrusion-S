@@ -16,6 +16,7 @@ import datetime
 import subprocess
 from multiprocessing import Process 
 import socket
+import tkinter
 
 COLS = ['duration', 'protocol_type', 'service', 'flag', 'src_bytes', 'dst_bytes', 'land' , 'wrong_fragment' , 'urgent' , 'hot','num_failed_logins','logged_in','num_compromised','root_shell' , 'su_attempted' ,'num_root' ,'num_file_creations' ,'num_shells' ,'num_access_files' ,'num_outbound_cmds','is_host_login','is_guest_login' ,'count','srv_count','serror_rate' ,'srv_serror_rate' ,'rerror_rate','srv_rerror_rate' , 'same_srv_rate', 'diff_srv_rate' , 'srv_diff_host_rate' , 'dst_host_count' ,'dst_host_srv_count' ,'dst_host_same_srv_rate','dst_host_diff_srv_rate' ,'dst_host_same_src_port_rate' , 'dst_host_srv_diff_host_rate' , 'dst_host_serror_rate' ,'dst_host_srv_serror_rate' , 'dst_host_rerror_rate' , 'dst_host_srv_rerror_rate' ,'attack_type', 'difficulty']
 
@@ -164,8 +165,11 @@ def main(mode, alert_type, interval, server_ip, port):
 		elif mode == "3":
 			actual_data = qt.fit_transform(actual_data)
 			attack_predictions_ee = ee.predict(actual_data)
+			print(set(attack_predictions_ee))
 			attack_predictions_brc = brc.predict(actual_data)
+			print(set(attack_predictions_brc))
 			attack_predictions_isf = isf.predict(actual_data)
+			print(set(attack_predictions_isf))
 		else:
 			attack_predictions  = vc.predict(actual_data)
 			actual_data = qt.fit_transform(actual_data)
@@ -174,36 +178,59 @@ def main(mode, alert_type, interval, server_ip, port):
 			attack_predictions_isf = isf.predict(actual_data)
 
 		if alert_type == "1":
-			print(len(attack_predictions))
-			print(list(attack_predictions).count("normal"))
-			attack_prediction_set = set(attack_predictions)
-			print(attack_prediction_set)
-			if attack_prediction_set != {"normal"}:
-				attack = True	
-			else:
-				attack = False
-			create_log_file(attack)
+			machine_side_alert(attack_predictions)
 		elif alert_type == "2":
+			attack = machine_side_alert(attack_predictions, log=False)
 			send_to_server(server_ip, port, attack)
 		else:
+			attack = machine_side_alert(attack_predictions)
 			send_to_server(server_ip, port, attack)
-			create_log_file()
 		#break
 	print("Program ended")
 		
+def machine_side_alert(attack_predictions, log=True):
+	print(len(attack_predictions))
+	print(list(attack_predictions).count("normal"))
+	attack_prediction_set = set(attack_predictions)
+	print(attack_prediction_set)
+	if attack_prediction_set != {"normal"}:
+		attack = True	
+		make_pop_up_async()
+	else:
+		attack = False
+	if log==True:
+		create_log_file(attack)
+	return attack
+
 def send_to_server(server_ip, port, attack):
 	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
 	sock.connect((server_ip, port)) 
 	sock.send(str(attack).encode()) 
 	sock.close()
 
+
+def make_pop_up():
+	pop_up = tkinter.Tk()
+	pop_up.geometry("+800+500")
+	alert = 'We suspect there to be an attack!!!!!'
+	#style = tkinter.ttk.Style()
+	#style.configure("alert.TLabel", font=("Arial", 64))
+	alert_m = tkinter.Message(pop_up, text=alert)
+	alert_m.config(bg='red')
+	alert_m.pack()
+	alert_m.mainloop()
+
+def make_pop_up_async():
+	p = Process(target=make_pop_up, args=())
+	p.start()
+
 def create_log_file(attack):
 	if attack == True:
- 		message = "\nThere was an attack\n"
+		message = "\nThere was an attack\n"
 	else:
 		message = "\nThere was no attack\n"
 	with open("log.txt", "a") as output_file:
-		timestamp = datetime.datetime.now().timestamp()
+		timestamp = datetime.datetime.now()
 		output_file.write(str(timestamp))
 		output_file.write(message)
 
