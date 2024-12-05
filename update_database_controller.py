@@ -1,7 +1,7 @@
 import pyodbc as odbc # pip install pypyodbc
 
 DRIVER_NAME = 'ODBC Driver 17 for SQL Server'
-SERVER_NAME = 'DESKTOP-5QD580I' # Need to find your server name by using sqlcmd through the terminal 
+SERVER_NAME = 'YU-HP' # Need to find your server name by using sqlcmd through the terminal 
 DATABASE_NAME = 'tempdb' 
 DEFAULT_DATABASE = 'Client_Attack_Status'
 DEFAULT_TABLE = 'Client_Attack_Status_Table'
@@ -14,12 +14,21 @@ connection_string = f"""
 """
 conn = odbc.connect(connection_string, autocommit=True)
 
+def return_conn():
+    conn = odbc.connect(connection_string, autocommit=True)
+    return conn
+
+def connect_to_db():
+    conn = odbc.connect(connection_string, autocommit=True)
+    database = DataBaseEngine(conn)
+    return database
+
 class DataBaseEngine():
     def __init__(self, connection):
         print("Star Engine:")
         self.__Connection = connection
         self.cursor = connection.cursor()
-        self.cursor.execute("USE Client_Attack_Status")
+        #self.cursor.execute("USE Client_Attack_Status")
         print(self.__Connection)
     def set_database(self):
         print("START: SET_DATABASE()")
@@ -101,38 +110,49 @@ class DataBaseEngine():
 
         return returning_list
 
-
-
-database = DataBaseEngine(conn)
-
-while(True):
-    print(
+    def get_query(self, query):  
+        SQL_Query = f"""        
+        USE {DEFAULT_DATABASE}
         """
-        Options:
-        1. set_database()
-        2. create_database()
-        3. create_table()
-        4. set_record_by_list()
-        5. get_record_by_list()
-        6. set_just_a_record_test()
-        0. exit()
-        """
-    )
-    current_input = input("Enter your input/number: ")
-    match current_input:
-        case '1':
-            database.set_database()
-        case '2':
-            database.create_database()
-        case '3':
-            database.create_table()
-        case '4':
-            incoming_junk_list = thislist = [1, "stringg", "stringg"]
-            database.set_record_by_list(incoming_junk_list)
-        case '5':
-            returning_table = database.get_record_by_list()
-            print(returning_table)
-        case '6':
-            database.set_just_a_record_test()
-        case '0':
-            break
+        self.cursor.execute(SQL_Query)
+        self.cursor.execute(query)
+        records = self.cursor.fetchall()
+        return records
+
+def main():
+        database = DataBaseEngine(conn)
+
+        while(True):
+            print(
+                """
+                Options:
+                1. set_database()
+                2. create_database()
+                3. create_table()
+                4. set_record_by_list()
+                5. get_record_by_list()
+                6. set_just_a_record_test()
+                0. exit()
+                """
+            )
+            current_input = input("Enter your input/number: ")
+            match current_input:
+                case '1':
+                    database.set_database()
+                case '2':
+                    database.create_database()
+                case '3':
+                    database.create_table()
+                case '4':
+                    incoming_junk_list = thislist = [1, "stringg", "stringg"]
+                    database.set_record_by_list(incoming_junk_list)
+                case '5':
+                    returning_table = database.get_record_by_list()
+                    print(returning_table)
+                case '6':
+                    database.set_just_a_record_test()
+                case '0':
+                    break
+
+if __name__ == "__main__":
+        main()
