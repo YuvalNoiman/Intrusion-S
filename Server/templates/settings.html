@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <style>
+       body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav {
+            display: flex;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            transition: background-color 0.3s;
+        }
+        nav a:hover {
+            background-color: #575757;
+        }
+        form {
+            margin-top: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Intrusion-S Monitor</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/history">History</a> <!-- Link to the historical data page -->
+            <a href="/settings">Settings</a>
+        </nav>
+    </header>
+
+    <h1>Settings</h1>
+    <form id="settingsForm">
+        <label for="serverName">Server Name:</label>
+        <input type="text" id="serverName" name="serverName" placeholder="Enter server name" required>
+
+        <label for="databaseName">Database Name:</label>
+        <input type="text" id="databaseName" name="databaseName" placeholder="Enter database name" required>
+
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" placeholder="Enter username" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Enter password" required>
+
+        <button type="submit">Save Settings</button>
+    </form>
+
+    <script>
+        document.getElementById('settingsForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            const serverName = document.getElementById('serverName').value;
+            const databaseName = document.getElementById('databaseName').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Here you would typically send the settings to your server
+            console.log('Settings saved:', { serverName, databaseName, username, password });
+
+            // Optionally, clear the form after saving
+            this.reset();
+            alert('Settings saved successfully!');
+        });
+    </script>
+</body>
+</html>
