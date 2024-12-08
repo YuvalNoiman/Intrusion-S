@@ -1,3 +1,5 @@
+By Tung Le, Aaron Tang, Yuval Noiman, Nathan Bupte, Omar Ramirez
+
 # Intrusion-S
 
 To get working on client:
