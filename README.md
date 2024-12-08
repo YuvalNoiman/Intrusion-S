@@ -24,7 +24,7 @@ Second install python using sudo apt-get install python
 
 Third install pip using sudo apt-get install pip and install python modules using pip install -r requirements.txt
 
-Fourth you will need to set install required Microsoft SQL Server, database drivers, and database managers. Oonce that is done you will have run db.py and create a database and table using db_controller.py.
+Fourth you will need to install the required Microsoft SQL Server, database drivers, and database managers. Once that is done you will have to run db.py and create a database and table using db_controller.py.
 
 Fifth you would run the server using "python -m server" and website using "python -m app".
 
